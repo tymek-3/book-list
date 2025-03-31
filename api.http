@@ -1,10 +1,20 @@
 @url = http://localhost:3000
 
 POST {{url}}/v1/auth/signup
-Content-Type: "application/json"
+content-type: "application/json"
 
 {
 	"name": "testName1",
 	"email": "sample1@example.com",
 	"password": "123"
 }
+
+> {%
+	client.global.set('TOKEN', response.body.token);
+%}
+
+###
+
+POST {{url}}/v1/auth/login
+accept: application/json
+Cookie: token={{TOKEN}}

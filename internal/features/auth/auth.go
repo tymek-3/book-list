@@ -2,6 +2,7 @@ package auth
 
 import (
 	"book-list/internal/data"
+	"book-list/internal/middleware"
 	"log"
 
 	"github.com/gin-gonic/gin"
@@ -23,5 +24,6 @@ func AddAuth(router *gin.RouterGroup, logger *log.Logger, db *data.Queries) {
 	aService := &AuthService{logger, db}
 	aEndoints := authEndpoints{aService, r}
 
-	aEndoints.addSignUpEndpoint()
+	r.POST("/signup", aEndoints.SignUpHandler)
+	r.POST("/login", middleware.Auth(logger), aEndoints.LoginHandler)
 }

@@ -10,31 +10,25 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func (ae *authEndpoints) addSignUpEndpoint() {
-	ae.r.POST("/signup", signUpEndpoint(ae.as))
-}
-
 type signUpRequest struct {
 	Name     string `json:"name" binding:"required"`
 	Email    string `json:"email" binding:"required"`
 	Password string `json:"password" binding:"required"`
 }
 
-func signUpEndpoint(as *AuthService) func(c *gin.Context) {
-	return func(c *gin.Context) {
-		var request signUpRequest
-		err := c.BindJSON(&request)
-		if err != nil {
-			c.Error(err)
-			c.Status(http.StatusBadRequest)
-			return
-		}
-
-		token, err := as.SignUp(c, request.Name, request.Email, request.Password)
-		c.JSON(http.StatusCreated, gin.H{
-			"token": token,
-		})
+func (ae *authEndpoints) SignUpHandler(c *gin.Context) {
+	var request signUpRequest
+	err := c.BindJSON(&request)
+	if err != nil {
+		c.Error(err)
+		c.Status(http.StatusBadRequest)
+		return
 	}
+
+	token, err := ae.as.SignUp(c, request.Name, request.Email, request.Password)
+	c.JSON(http.StatusCreated, gin.H{
+		"token": token,
+	})
 }
 
 // returns jwtToken, err
@@ -56,6 +50,6 @@ func (as *AuthService) SignUp(ctx context.Context, name, email, password string)
 		PasswordHash: user.PasswordHash,
 	})
 
-	token := utils.GenerateToken(as.logger, user.ID())
+	token := utils.GenerateToken(as.logger, user.ID(), user.Email)
 	return token, nil
 }

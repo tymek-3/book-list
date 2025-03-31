@@ -5,6 +5,7 @@ import (
 	"book-list/internal/data"
 	"book-list/internal/features"
 	"book-list/internal/features/auth"
+	"book-list/internal/middleware"
 	"book-list/internal/utils"
 	"book-list/pkg/gintemplrenderer"
 
@@ -27,6 +28,8 @@ func main() {
 
 	engine := gin.Default()
 	engine.HTMLRender = &gintemplrenderer.HTMLTemplRenderer{}
+
+	engine.Use(middleware.Errors(logger))
 
 	apiV1 := engine.Group("/v1")
 

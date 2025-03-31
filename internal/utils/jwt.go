@@ -15,9 +15,10 @@ var (
 	ErrExpiredToken = fmt.Errorf("Expired token")
 )
 
-func GenerateToken(logger *log.Logger, userID uuid.UUID) string {
+func GenerateToken(logger *log.Logger, userID uuid.UUID, userEmail string) string {
 	t := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user_id": userID.String(),
+		"email":   userEmail,
 		"exp":     time.Now().Add(time.Hour).Unix(),
 	})
 
@@ -44,8 +45,8 @@ func VerifyToken(logger *log.Logger, token string) (jwt.MapClaims, error) {
 		return nil, ErrInvalidToken
 	}
 
-	exp, ok := claims["exp"].(int64)
-	if !ok || time.Now().Unix() > exp {
+	exp, ok := claims["exp"].(float64)
+	if !ok || time.Now().Unix() > int64(exp) {
 		return nil, ErrExpiredToken
 	}
 
