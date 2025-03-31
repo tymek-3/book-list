@@ -1,0 +1,25 @@
+{
+  "version": "2",
+  "sql": [
+    {
+      "engine": "sqlite",
+      "queries": "internal/data/sql/queries",
+      "schema": "internal/data/sql/schema.sql",
+      "gen": {
+        "go": {
+          "out": "internal/data/",
+          "package": "data",
+          "overrides": [
+            {
+              "db_type": "uuid",
+              "go_type": {
+                "import": "github.com/google/uuid",
+                "type": "UUID"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ]
+}

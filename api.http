@@ -1,0 +1,10 @@
+@url = http://localhost:3000
+
+POST {{url}}/v1/auth/signup
+Content-Type: "application/json"
+
+{
+	"name": "testName1",
+	"email": "sample1@example.com",
+	"password": "123"
+}
