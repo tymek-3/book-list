@@ -31,7 +31,7 @@ func main() {
 
 	engine.Use(middleware.Errors(logger))
 
-	apiV1 := engine.Group("/v1")
+	apiV1 := engine.Group("/api/v1")
 
 	features.AddHealthCheck(apiV1, logger)
 	auth.AddAuth(apiV1, logger, db)

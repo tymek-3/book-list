@@ -46,5 +46,6 @@ type User struct {
 	ID           uuid.UUID
 	Name         string
 	Email        string
+	Role         string
 	PasswordHash string
 }

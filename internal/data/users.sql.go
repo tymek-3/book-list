@@ -11,40 +11,43 @@ import (
 	"github.com/google/uuid"
 )
 
-const addUser = `-- name: AddUser :exec
-INSERT INTO users (id, name, email, password_hash)
-VALUES (?, ?, ?, ?)
+const userAdd = `-- name: UserAdd :exec
+INSERT INTO users (id, name, email, role, password_hash)
+VALUES (?, ?, ?, ?, ?)
 `
 
-type AddUserParams struct {
+type UserAddParams struct {
 	ID           uuid.UUID
 	Name         string
 	Email        string
+	Role         string
 	PasswordHash string
 }
 
-func (q *Queries) AddUser(ctx context.Context, arg AddUserParams) error {
-	_, err := q.db.ExecContext(ctx, addUser,
+func (q *Queries) UserAdd(ctx context.Context, arg UserAddParams) error {
+	_, err := q.db.ExecContext(ctx, userAdd,
 		arg.ID,
 		arg.Name,
 		arg.Email,
+		arg.Role,
 		arg.PasswordHash,
 	)
 	return err
 }
 
-const getByEmail = `-- name: GetByEmail :one
-SELECT id, name, email, password_hash FROM users
+const userGetByEmail = `-- name: UserGetByEmail :one
+SELECT id, name, email, role, password_hash FROM users
 WHERE email = ? LIMIT 1
 `
 
-func (q *Queries) GetByEmail(ctx context.Context, email string) (User, error) {
-	row := q.db.QueryRowContext(ctx, getByEmail, email)
+func (q *Queries) UserGetByEmail(ctx context.Context, email string) (User, error) {
+	row := q.db.QueryRowContext(ctx, userGetByEmail, email)
 	var i User
 	err := row.Scan(
 		&i.ID,
 		&i.Name,
 		&i.Email,
+		&i.Role,
 		&i.PasswordHash,
 	)
 	return i, err

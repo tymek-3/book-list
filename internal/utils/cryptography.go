@@ -1,13 +1,13 @@
 package utils
 
 import (
+	"book-list/config"
+
 	"golang.org/x/crypto/bcrypt"
 )
 
-const COST = bcrypt.DefaultCost
-
 func HashPassword(password string) (string, error) {
-	bytes, err := bcrypt.GenerateFromPassword([]byte(password), COST)
+	bytes, err := bcrypt.GenerateFromPassword([]byte(password), config.AppConfig.BCRYPT_COST)
 	return string(bytes), err
 }
 

@@ -1,6 +1,6 @@
 @url = http://localhost:3000
 
-POST {{url}}/v1/auth/signup
+POST {{url}}/api/v1/auth/signup
 content-type: "application/json"
 
 {
@@ -15,6 +15,26 @@ content-type: "application/json"
 
 ###
 
-POST {{url}}/v1/auth/login
+POST {{url}}/api/v1/auth/login
+content-type: application/json
+
+{
+	"email": "sample1@example.com",
+	"password": "123"
+}
+
+> {%
+	client.global.set('TOKEN', response.body.token);
+%}
+
+###
+
+POST {{url}}/api/v1/auth/logout
 accept: application/json
 Cookie: token={{TOKEN}}
+
+###
+
+GET {{url}}/api/v1/auth/test?email=sample1@example.com
+accept: application/json
+

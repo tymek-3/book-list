@@ -5,3 +5,6 @@ fresh:
 	rm ./internal/data/sql/db.db
 	sqlc generate
 	just run
+
+db:
+	sqlite3 ./internal/data/sql/db.db -header

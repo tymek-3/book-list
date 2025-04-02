@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"book-list/config"
 	"book-list/internal/utils"
 	"fmt"
 	"log"
@@ -13,13 +14,16 @@ import (
 
 func Auth(logger *log.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
-		token, err := c.Cookie("token")
+		token, err := c.Cookie(config.AppConfig.TOKEN_COOKIE_NAME)
 		if err != nil {
+			fmt.Print("header: ")
 			fmt.Println(c.Writer.Header())
 			token := c.GetHeader("Authorization")
-			fmt.Println("token")
-			splitToken := strings.Split(token, "Bearer ")
-			token = splitToken[1]
+			fmt.Printf("auth header: %s\n", token)
+			if token != "" {
+				splitToken := strings.Split(token, "Bearer ")
+				token = splitToken[1]
+			}
 		}
 
 		if token == "" {

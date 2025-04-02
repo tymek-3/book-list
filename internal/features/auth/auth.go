@@ -4,6 +4,7 @@ import (
 	"book-list/internal/data"
 	"book-list/internal/middleware"
 	"log"
+	"net/http"
 
 	"github.com/gin-gonic/gin"
 )
@@ -22,8 +23,19 @@ func AddAuth(router *gin.RouterGroup, logger *log.Logger, db *data.Queries) {
 	r := router.Group("/auth")
 
 	aService := &AuthService{logger, db}
-	aEndoints := authEndpoints{aService, r}
+	aEndoints := &authEndpoints{aService, r}
 
 	r.POST("/signup", aEndoints.SignUpHandler)
-	r.POST("/login", middleware.Auth(logger), aEndoints.LoginHandler)
+	r.POST("/login", aEndoints.LoginHandler)
+	r.POST("/logout", middleware.Auth(logger), aEndoints.LogoutHandler)
+
+	// TODO: remove later
+	r.GET("/test", func(c *gin.Context) {
+		email := c.Query("email")
+		_, err := db.UserGetByEmail(c, email)
+		if err != nil {
+			c.String(http.StatusNotFound, err.Error())
+		}
+		c.String(http.StatusOK, "exists")
+	})
 }
