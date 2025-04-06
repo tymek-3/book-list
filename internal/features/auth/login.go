@@ -64,7 +64,7 @@ func (as *AuthService) Login(ctx context.Context, request LoginRequest) (string,
 		return "", ErrInvalidCredentials
 	}
 
-	token := utils.GenerateToken(as.logger, user.ID, user.Email)
+	token := utils.GenerateToken(as.logger, *user.ToEntity())
 
 	return token, nil
 }

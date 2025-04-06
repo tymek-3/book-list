@@ -54,18 +54,21 @@ func (as *AuthService) SignUp(ctx context.Context, request SignUpRequest) (strin
 		return "", err
 	}
 
-	user, err := entities.NewUser(request.Name, request.Email, pHash)
+	user, err := entities.NewUser(entities.Email(request.Email), request.Name, pHash)
 	if err != nil {
 		return "", err
 	}
 
-	as.db.UserAdd(ctx, data.UserAddParams{
-		ID:           user.ID(),
+	err = as.db.UserAdd(ctx, data.UserAddParams{
+		Email:        string(user.Email),
 		Name:         user.Name,
-		Email:        user.Email,
+		Role:         user.Role.Name,
 		PasswordHash: user.PasswordHash,
 	})
+	if err != nil {
+		return "", err
+	}
 
-	token := utils.GenerateToken(as.logger, user.ID(), user.Email)
+	token := utils.GenerateToken(as.logger, *user)
 	return token, nil
 }

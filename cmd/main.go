@@ -4,6 +4,7 @@ import (
 	"book-list/config"
 	"book-list/internal/data"
 	"book-list/internal/features"
+	"book-list/internal/features/admin"
 	"book-list/internal/features/auth"
 	"book-list/internal/middleware"
 	"book-list/internal/utils"
@@ -35,6 +36,7 @@ func main() {
 
 	features.AddHealthCheck(apiV1, logger)
 	auth.AddAuth(apiV1, logger, db)
+	admin.AddAdmin(apiV1, logger, db)
 
 	engine.Run(":3000")
 }

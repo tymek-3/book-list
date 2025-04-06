@@ -27,9 +27,9 @@ type Book struct {
 }
 
 type ListItem struct {
-	UserID uuid.UUID
-	BookID uuid.UUID
-	Status int64
+	UserEmail string
+	BookID    uuid.UUID
+	Status    int64
 }
 
 type Publisher struct {
@@ -43,9 +43,9 @@ type Type struct {
 }
 
 type User struct {
-	ID           uuid.UUID
-	Name         string
 	Email        string
+	Name         string
 	Role         string
+	RoleSetBy    sql.NullString
 	PasswordHash string
 }

@@ -7,17 +7,15 @@ package data
 
 import (
 	"context"
-
-	"github.com/google/uuid"
+	"database/sql"
 )
 
 const userAdd = `-- name: UserAdd :exec
-INSERT INTO users (id, name, email, role, password_hash)
-VALUES (?, ?, ?, ?, ?)
+INSERT INTO users (name, email, role, password_hash)
+VALUES (?, ?, ?, ?)
 `
 
 type UserAddParams struct {
-	ID           uuid.UUID
 	Name         string
 	Email        string
 	Role         string
@@ -26,7 +24,6 @@ type UserAddParams struct {
 
 func (q *Queries) UserAdd(ctx context.Context, arg UserAddParams) error {
 	_, err := q.db.ExecContext(ctx, userAdd,
-		arg.ID,
 		arg.Name,
 		arg.Email,
 		arg.Role,
@@ -36,7 +33,7 @@ func (q *Queries) UserAdd(ctx context.Context, arg UserAddParams) error {
 }
 
 const userGetByEmail = `-- name: UserGetByEmail :one
-SELECT id, name, email, role, password_hash FROM users
+SELECT email, name, role, role_set_by, password_hash FROM users
 WHERE email = ? LIMIT 1
 `
 
@@ -44,11 +41,38 @@ func (q *Queries) UserGetByEmail(ctx context.Context, email string) (User, error
 	row := q.db.QueryRowContext(ctx, userGetByEmail, email)
 	var i User
 	err := row.Scan(
-		&i.ID,
-		&i.Name,
 		&i.Email,
+		&i.Name,
 		&i.Role,
+		&i.RoleSetBy,
 		&i.PasswordHash,
 	)
 	return i, err
+}
+
+const userUpdate = `-- name: UserUpdate :exec
+UPDATE users
+SET email = ?, name = ?, role = ?, role_set_by = ?, password_hash = ?
+WHERE email = ?
+`
+
+type UserUpdateParams struct {
+	Email        string
+	Name         string
+	Role         string
+	RoleSetBy    sql.NullString
+	PasswordHash string
+	Email_2      string
+}
+
+func (q *Queries) UserUpdate(ctx context.Context, arg UserUpdateParams) error {
+	_, err := q.db.ExecContext(ctx, userUpdate,
+		arg.Email,
+		arg.Name,
+		arg.Role,
+		arg.RoleSetBy,
+		arg.PasswordHash,
+		arg.Email_2,
+	)
+	return err
 }

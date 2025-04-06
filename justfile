@@ -2,7 +2,7 @@ run:
 	go run ./cmd/main.go
 
 fresh:
-	rm ./internal/data/sql/db.db
+	rm ./internal/data/sql/db.db || true
 	sqlc generate
 	just run
 

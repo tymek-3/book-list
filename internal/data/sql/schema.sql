@@ -1,3 +1,5 @@
+-- TODO: createdat updatedat
+
 CREATE TABLE books (
 	id uuid PRIMARY KEY,
 	name TEXT NOT null,
@@ -29,17 +31,17 @@ CREATE TABLE authors(
 );
 
 CREATE TABLE users(
-	id uuid PRIMARY KEY,
+	email TEXT PRIMARY KEY,
 	name TEXT NOT NULL,
-	email TEXT UNIQUE NOT NULL,
 	role TEXT NOT NULL,
+	role_set_by TEXT,
 	password_hash TEXT NOT NULL
 );
 
 CREATE TABLE list_item(
-	user_id uuid NOT NULL,
+	user_email TEXT NOT NULL,
 	book_id uuid NOT NULL,
 	status INTEGER NOT NULL,
 
-	PRIMARY KEY(user_id, book_id)
+	PRIMARY KEY(user_email, book_id)
 );

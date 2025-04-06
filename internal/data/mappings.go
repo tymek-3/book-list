@@ -7,23 +7,11 @@ import (
 )
 
 func (u User) ToEntity() *entities.User {
-	var role entities.Role
-	switch u.Role {
-	default:
-	case "user":
-		role = entities.RoleUser
-		break
-	case "admin":
-		role = entities.RoleAdmin
-		break
-	}
-
 	return entities.ConstructUser(
-		u.ID,
+		entities.Email(u.Email),
 		u.Name,
-		u.Email,
 		u.PasswordHash,
-		role,
+		entities.RoleFromString(u.Role),
 		// TODO:
 		[]uuid.UUID{},
 	)

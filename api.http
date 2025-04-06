@@ -38,3 +38,19 @@ Cookie: token={{TOKEN}}
 GET {{url}}/api/v1/auth/test?email=sample1@example.com
 accept: application/json
 
+###
+
+GET {{url}}/api/v1/admin/test
+Cookie: token={{TOKEN}}
+
+###
+
+PUT {{url}}/api/v1/admin/users/promote
+Cookie: token={{TOKEN}}
+content-type: application/json
+
+{
+	"role": "admin",
+	"email": "sample2@example.com"
+}
+

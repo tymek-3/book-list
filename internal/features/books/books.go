@@ -23,6 +23,5 @@ func AddBooksEndpoints(router *gin.RouterGroup, logger *log.Logger, db *data.Que
 	bs := &BooksService{logger, db}
 	be := &booksEndpoints{bs, r}
 
-	r.GET("/", be.GetAllHandler)
-
+	_ = be
 }
