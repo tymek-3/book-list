@@ -11,16 +11,15 @@ import (
 )
 
 type Author struct {
-	ID        uuid.UUID
-	FirstName string
-	LastName  string
+	ID       uuid.UUID
+	FullName string
 }
 
 type Book struct {
 	ID              uuid.UUID
 	Name            string
 	Score           sql.NullFloat64
-	PublicationDate sql.NullInt64
+	PublicationDate sql.NullString
 	TypeID          uuid.UUID
 	AuthorID        interface{}
 	PublisherID     interface{}

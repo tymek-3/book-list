@@ -1,6 +1,6 @@
-@url = http://localhost:3000
+@urlV1 = http://localhost:3000/api/v1
 
-POST {{url}}/api/v1/auth/signup
+POST {{urlV1}}/auth/signup
 content-type: "application/json"
 
 {
@@ -15,7 +15,7 @@ content-type: "application/json"
 
 ###
 
-POST {{url}}/api/v1/auth/login
+POST {{urlV1}}/auth/login
 content-type: application/json
 
 {
@@ -29,23 +29,23 @@ content-type: application/json
 
 ###
 
-POST {{url}}/api/v1/auth/logout
+POST {{urlV1}}/auth/logout
 accept: application/json
 Cookie: token={{TOKEN}}
 
 ###
 
-GET {{url}}/api/v1/auth/test?email=sample1@example.com
+GET {{urlV1}}/auth/test?email=sample1@example.com
 accept: application/json
 
 ###
 
-GET {{url}}/api/v1/admin/test
+GET {{urlV1}}/admin/test
 Cookie: token={{TOKEN}}
 
 ###
 
-PUT {{url}}/api/v1/admin/users/promote
+PUT {{urlV1}}/admin/users/promote
 Cookie: token={{TOKEN}}
 content-type: application/json
 
@@ -54,3 +54,12 @@ content-type: application/json
 	"email": "sample2@example.com"
 }
 
+###
+
+GET {{urlV1}}/books/
+accept: application/json
+
+###
+
+GET {{urlV1}}/books/search?q=i
+accept: application/json

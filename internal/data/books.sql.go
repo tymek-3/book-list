@@ -7,15 +7,229 @@ package data
 
 import (
 	"context"
+	"database/sql"
+
+	"github.com/google/uuid"
 )
 
-const count = `-- name: Count :one
-SELECT count(*) FROM books
+const bookAdd = `-- name: BookAdd :exec
+INSERT INTO books (id, name, score, publication_date, author_id, publisher_id)
+VALUES (?, ?, ?, ?, ?, ?)
 `
 
-func (q *Queries) Count(ctx context.Context) (int64, error) {
-	row := q.db.QueryRowContext(ctx, count)
-	var count int64
-	err := row.Scan(&count)
-	return count, err
+type BookAddParams struct {
+	ID              uuid.UUID
+	Name            string
+	Score           sql.NullFloat64
+	PublicationDate sql.NullString
+	AuthorID        interface{}
+	PublisherID     interface{}
+}
+
+func (q *Queries) BookAdd(ctx context.Context, arg BookAddParams) error {
+	_, err := q.db.ExecContext(ctx, bookAdd,
+		arg.ID,
+		arg.Name,
+		arg.Score,
+		arg.PublicationDate,
+		arg.AuthorID,
+		arg.PublisherID,
+	)
+	return err
+}
+
+const bookFullAll = `-- name: BookFullAll :many
+SELECT
+b.id,
+b.name,
+b.score,
+b.publication_date,
+
+a.id AS author_id,
+a.full_name AS author_full_name,
+
+t.id AS type_id,
+t.name AS type_name,
+
+p.id AS publisher_id,
+p.name AS publisher_name
+
+FROM books AS b
+LEFT JOIN authors AS a ON b.author_id = a.id
+LEFT JOIN publishers AS p ON b.publisher_id = p.id
+LEFT JOIN types AS t ON b.type_id = t.id
+ORDER BY b.score
+`
+
+type BookFullAllRow struct {
+	ID              uuid.UUID
+	Name            string
+	Score           sql.NullFloat64
+	PublicationDate sql.NullString
+	AuthorID        interface{}
+	AuthorFullName  sql.NullString
+	TypeID          interface{}
+	TypeName        sql.NullString
+	PublisherID     interface{}
+	PublisherName   sql.NullString
+}
+
+func (q *Queries) BookFullAll(ctx context.Context) ([]BookFullAllRow, error) {
+	rows, err := q.db.QueryContext(ctx, bookFullAll)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []BookFullAllRow
+	for rows.Next() {
+		var i BookFullAllRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Score,
+			&i.PublicationDate,
+			&i.AuthorID,
+			&i.AuthorFullName,
+			&i.TypeID,
+			&i.TypeName,
+			&i.PublisherID,
+			&i.PublisherName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const bookFullSearch = `-- name: BookFullSearch :many
+SELECT
+b.id,
+b.name,
+b.score,
+b.publication_date,
+
+a.id AS author_id,
+a.full_name AS author_full_name,
+
+t.id AS type_id,
+t.name AS type_name,
+
+p.id AS publisher_id,
+p.name AS publisher_name
+
+FROM books AS b
+LEFT JOIN authors AS a ON b.author_id = a.id
+LEFT JOIN publishers AS p ON b.publisher_id = p.id
+LEFT JOIN types AS t ON b.type_id = t.id
+WHERE b.name LIKE '%' || ? || '%'
+ORDER BY b.score
+LIMIT 20
+`
+
+type BookFullSearchRow struct {
+	ID              uuid.UUID
+	Name            string
+	Score           sql.NullFloat64
+	PublicationDate sql.NullString
+	AuthorID        interface{}
+	AuthorFullName  sql.NullString
+	TypeID          interface{}
+	TypeName        sql.NullString
+	PublisherID     interface{}
+	PublisherName   sql.NullString
+}
+
+func (q *Queries) BookFullSearch(ctx context.Context, dollar_1 sql.NullString) ([]BookFullSearchRow, error) {
+	rows, err := q.db.QueryContext(ctx, bookFullSearch, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []BookFullSearchRow
+	for rows.Next() {
+		var i BookFullSearchRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.Name,
+			&i.Score,
+			&i.PublicationDate,
+			&i.AuthorID,
+			&i.AuthorFullName,
+			&i.TypeID,
+			&i.TypeName,
+			&i.PublisherID,
+			&i.PublisherName,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const bookGetFullById = `-- name: BookGetFullById :one
+SELECT
+b.id,
+b.name,
+b.score,
+b.publication_date,
+
+a.id AS author_id,
+a.full_name AS author_full_name,
+
+t.id AS type_id,
+t.name AS type_name,
+
+p.id AS publisher_id,
+p.name AS publisher_name
+
+FROM books AS b
+LEFT JOIN authors AS a ON b.author_id = a.id
+LEFT JOIN publishers AS p ON b.publisher_id = p.id
+LEFT JOIN types AS t ON b.type_id = t.id
+WHERE b.id = ? LIMIT 1
+`
+
+type BookGetFullByIdRow struct {
+	ID              uuid.UUID
+	Name            string
+	Score           sql.NullFloat64
+	PublicationDate sql.NullString
+	AuthorID        interface{}
+	AuthorFullName  sql.NullString
+	TypeID          interface{}
+	TypeName        sql.NullString
+	PublisherID     interface{}
+	PublisherName   sql.NullString
+}
+
+func (q *Queries) BookGetFullById(ctx context.Context, id uuid.UUID) (BookGetFullByIdRow, error) {
+	row := q.db.QueryRowContext(ctx, bookGetFullById, id)
+	var i BookGetFullByIdRow
+	err := row.Scan(
+		&i.ID,
+		&i.Name,
+		&i.Score,
+		&i.PublicationDate,
+		&i.AuthorID,
+		&i.AuthorFullName,
+		&i.TypeID,
+		&i.TypeName,
+		&i.PublisherID,
+		&i.PublisherName,
+	)
+	return i, err
 }

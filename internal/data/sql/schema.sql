@@ -4,7 +4,7 @@ CREATE TABLE books (
 	id uuid PRIMARY KEY,
 	name TEXT NOT null,
 	score REAL,
-	publication_date INTEGER,
+	publication_date TEXT,
 	type_id uuid NOT NULL,
 	author_id uuid,
 	publisher_id uuid,
@@ -26,8 +26,7 @@ CREATE TABLE publishers(
 
 CREATE TABLE authors(
 	id uuid PRIMARY KEY,
-	first_name TEXT NOT NULL,
-	last_name TEXT NOT NULL
+	full_name TEXT NOT NULL
 );
 
 CREATE TABLE users(

@@ -29,6 +29,16 @@ func NewDB(logger *log.Logger) (*Queries, error) {
 			return nil, err
 		}
 		logger.Println("database created")
+
+		seed, err := os.ReadFile("./internal/data/sql/queries/seed.sql")
+		if err != nil {
+			return nil, err
+		}
+
+		if _, err = conn.ExecContext(ctx, string(seed)); err != nil {
+			return nil, err
+		}
+		logger.Println("database seeded")
 	}
 
 	db := New(conn)

@@ -6,6 +6,7 @@ import (
 	"book-list/internal/features"
 	"book-list/internal/features/admin"
 	"book-list/internal/features/auth"
+	"book-list/internal/features/books"
 	"book-list/internal/middleware"
 	"book-list/internal/utils"
 	"book-list/pkg/gintemplrenderer"
@@ -37,6 +38,7 @@ func main() {
 	features.AddHealthCheck(apiV1, logger)
 	auth.AddAuth(apiV1, logger, db)
 	admin.AddAdmin(apiV1, logger, db)
+	books.AddBooks(apiV1, logger, db)
 
 	engine.Run(":3000")
 }

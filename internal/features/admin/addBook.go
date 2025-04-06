@@ -2,6 +2,7 @@ package admin
 
 import (
 	"context"
+
 	"github.com/gin-gonic/gin"
 	"github.com/google/uuid"
 )
@@ -18,5 +19,4 @@ type addBookRequest struct {
 }
 
 func (as *AdminService) AddBook(ctx context.Context, request addBookRequest) {
-
 }
